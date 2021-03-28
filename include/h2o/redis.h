@@ -41,16 +41,17 @@ typedef enum {
 typedef struct st_h2o_redis_client_t {
     h2o_loop_t *loop;
     h2o_redis_connection_state_t state;
-    void (*on_connect)(void);
-    void (*on_close)(const char *errstr);
+    void (*on_connect)(struct st_h2o_redis_client_t *client);
+    void (*on_close)(struct st_h2o_redis_client_t *client, const char *errstr);
     uint64_t connect_timeout;
     uint64_t command_timeout;
 
     struct redisAsyncContext *_redis;
     h2o_timer_t _timeout_entry;
+    void *data;
 } h2o_redis_client_t;
 
-typedef void (*h2o_redis_command_cb)(struct redisReply *reply, void *cb_data, const char *errstr);
+typedef void (*h2o_redis_command_cb)(h2o_redis_client_t *client, struct redisReply *reply, void *cb_data, const char *errstr);
 
 typedef enum enum_h2o_redis_command_type_t {
     H2O_REDIS_COMMAND_TYPE_NORMAL = 1,

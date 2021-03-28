@@ -166,13 +166,13 @@ void h2o_accept_setup_memcached_ssl_resumption(h2o_memcached_context_t *memc, un
     accept_data_callbacks.destroy = destroy_memcached_accept_data;
 }
 
-static void on_redis_connect(void)
+static void on_redis_connect(h2o_redis_client_t *client)
 {
     h2o_error_printf("connected to redis at %s:%" PRIu16 "\n", async_resumption_context.redis.host.base,
                      async_resumption_context.redis.port);
 }
 
-static void on_redis_close(const char *errstr)
+static void on_redis_close(h2o_redis_client_t *client, const char *errstr)
 {
     if (errstr == NULL) {
         h2o_error_printf("disconnected from redis at %s:%" PRIu16 "\n", async_resumption_context.redis.host.base,
@@ -223,7 +223,7 @@ static h2o_iovec_t build_redis_value(h2o_iovec_t session_data)
 
 #undef BASE64_LENGTH
 
-static void redis_resumption_on_get(redisReply *reply, void *_accept_data, const char *errstr)
+static void redis_resumption_on_get(h2o_redis_client_t *client, redisReply *reply, void *_accept_data, const char *errstr)
 {
     struct st_h2o_redis_resumption_accept_data_t *accept_data = _accept_data;
     accept_data->get_command = NULL;

@@ -48,7 +48,7 @@ static void close_and_detach_connection(h2o_redis_client_t *client, const char *
     assert(client->_redis != NULL);
     client->state = H2O_REDIS_CONNECTION_STATE_CLOSED;
     if (client->on_close != NULL)
-        client->on_close(errstr);
+        client->on_close(client, errstr);
 
     client->_redis->data = NULL;
     client->_redis = NULL;
@@ -105,7 +105,7 @@ static void on_connect(const redisAsyncContext *redis, int status)
 
     client->state = H2O_REDIS_CONNECTION_STATE_CONNECTED;
     if (client->on_connect != NULL)
-        client->on_connect();
+        client->on_connect(client);
 }
 
 static void on_disconnect(const redisAsyncContext *redis, int status)
@@ -182,7 +182,7 @@ static void dispose_command(h2o_redis_command_t *command)
 static void handle_reply(h2o_redis_command_t *command, redisReply *reply, const char *errstr)
 {
     if (command->cb != NULL)
-        command->cb(reply, command->data, errstr);
+        command->cb(command->client, reply, command->data, errstr);
 
     switch (command->type) {
     case H2O_REDIS_COMMAND_TYPE_SUBSCRIBE:

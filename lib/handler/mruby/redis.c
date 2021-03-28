@@ -199,7 +199,7 @@ static mrb_value decode_redis_reply(mrb_state *mrb, redisReply *reply, mrb_value
     return decoded;
 }
 
-static void on_redis_command(redisReply *_reply, void *_ctx, const char *errstr)
+static void on_redis_command(h2o_redis_client_t *client, redisReply *_reply, void *_ctx, const char *errstr)
 {
     struct st_h2o_mruby_redis_command_context_t *ctx = _ctx;
     mrb_state *mrb = ctx->client->ctx->shared->mrb;

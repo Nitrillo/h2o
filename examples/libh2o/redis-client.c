@@ -69,7 +69,7 @@ static void dump_reply(redisReply *reply, unsigned indent)
     }
 }
 
-static void on_redis_command(redisReply *reply, void *cb_data, const char *errstr)
+static void on_redis_command(h2o_redis_client_t *client, redisReply *reply, void *cb_data, const char *errstr)
 {
     if (errstr != NULL) {
         fprintf(stderr, "redis error: %s\n", errstr);
@@ -80,13 +80,13 @@ static void on_redis_command(redisReply *reply, void *cb_data, const char *errst
     }
 }
 
-static void on_redis_connect(void)
+static void on_redis_connect(h2o_redis_client_t *client)
 {
     fprintf(stderr, "connected to redis\n");
     h2o_redis_command(client, on_redis_command, "get server info", "INFO");
 }
 
-static void on_redis_close(const char *errstr)
+static void on_redis_close(h2o_redis_client_t *client, const char *errstr)
 {
     if (errstr == NULL) {
         fprintf(stderr, "disconnected from redis\n");
